@@ -22,7 +22,7 @@ Create the cluster using the configuration file:
 
 ```bash
 
-kind create cluster --config kind-config.yaml --name tws-kind-cluster
+kind create cluster --name=mandhar --config=kind-config.yml
 ```
 Verify the cluster:
 
