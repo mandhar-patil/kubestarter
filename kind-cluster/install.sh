@@ -1,17 +1,23 @@
 #!/bin/bash
 
-set -e  # Exit immediately if a command exits with a non-zero status
+set -e
 set -o pipefail
 
-echo "🚀 Starting installation of Docker, Kind, and kubectl..."
+echo "🚀 Starting installation of Docker, Kind, and kubectl on Rocky Linux..."
 
 # ----------------------------
 # 1. Install Docker
 # ----------------------------
 if ! command -v docker &>/dev/null; then
   echo "📦 Installing Docker..."
-  sudo apt-get update -y
-  sudo apt-get install -y docker.io
+
+  sudo dnf -y install dnf-plugins-core
+  sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  echo "👤 Enabling and starting Docker service..."
+  sudo systemctl enable docker
+  sudo systemctl start docker
 
   echo "👤 Adding current user to docker group..."
   sudo usermod -aG docker "$USER"
@@ -51,8 +57,8 @@ if ! command -v kubectl &>/dev/null; then
   echo "📦 Installing kubectl (latest stable version)..."
 
   curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-  rm -f kubectl
+  chmod +x kubectl
+  sudo mv kubectl /usr/local/bin/kubectl
 
   echo "✅ kubectl installed successfully."
 else
@@ -70,3 +76,4 @@ kubectl version --client --output=yaml
 
 echo
 echo "🎉 Docker, Kind, and kubectl installation complete!"
+
