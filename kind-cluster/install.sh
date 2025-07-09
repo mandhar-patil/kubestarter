@@ -20,7 +20,7 @@ if ! command -v docker &>/dev/null; then
   sudo systemctl start docker
 
   echo "👤 Adding current user to docker group..."
-  sudo usermod -aG docker "$USER"
+  sudo usermod -aG docker $USER && newgrp docker
 
   echo "✅ Docker installed and user added to docker group."
 else
